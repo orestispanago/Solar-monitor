@@ -1,0 +1,63 @@
+# Notes
+
+## QC work
+
+Tests and conditions: [best_practices.md](best_practices.md). Grouped by the data each item needs, in build order. Within a group: tracker and ring first.
+
+### 1. libinsitu flags on the merged df
+- [x] Call `compute_qc_flags()` on solar GHI + suntracker DHI, DNI (`qc.py`)
+- [x] Fix `main.py`: pass `suntracker_1min` to `run_qc()`, drop the unused `merged`
+- [ ] Summarize the libinsitu tests, one row each (n_tested, n_failed, pct_failed, status):
+  - [ ] BSRN physically possible upper limits, GHI, DHI, DNI
+  - [ ] BSRN extremely rare upper limits, GHI, DHI, DNI
+  - [ ] Diffuse fraction K < 1.05/1.10
+  - [ ] Geuder tracker test K ≤ 0.96 when Kt > 0.6
+  - [ ] Kn < Kt
+  - [ ] Forstinger tracker-off (Kn > 0.0171 or Kt < 0.533)
+  - [ ] Closure ratio
+  - [ ] Maxwell closure difference
+- [ ] Map each test to instrument and action
+- [ ] OK/ALERT threshold per test, NOT RUN when n_tested = 0
+
+### 2. Needs only the df + sun position (zenith, ETR from libinsitu)
+- [ ] Completeness: row count (1440 solar, 8640 suntracker), empty or stuck columns, time gaps
+- [ ] Step change > 1000 W/m², pandas `diff`
+- [ ] Kt < 1.4
+- [ ] Kn < (1100 + 0.03 · altitude) / ETR
+- [ ] Kd < 0.6
+- [ ] Nighttime offset correction of the pyranometers (Nollas et al. 2023)
+- [ ] BSRN lower limits −4/−2, after offset correction
+- [ ] Nollas GHI lower limit (Eq. 4-1), after offset correction
+- [ ] Nollas DHI lower limit, cloudy (Eq. 4-1), after offset correction
+
+### 3. Needs clear-sky GHI and DNI (handbook formulas or McClear)
+- [ ] Long & Shi tracker test
+- [ ] Forstinger tracker test, handbook version (Table 4-8)
+
+### 4. Needs outside data or models
+- [ ] Shadow ring test on solar DHI, diffuse fraction model from pvlib
+- [ ] Shadow ring correction of solar DHI
+- [ ] DHI comparison: solar ring CMP11 vs suntracker MS-80, after ring correction
+- [ ] Second libinsitu run on solar only (GHI, ring DHI, CSD3 DNI), trends only, no alerts
+- [ ] Nollas DHI lower limit, cloudless (Rayleigh limit − 1, Eq. 4-2), pressure from meteo
+- [ ] Horizon mask from `pvlib.iotools.get_pvgis_horizon`, flag only
+- [ ] GTI and GTISW: upper limits and step change (Lorenz et al. 2022)
+- [ ] GTI and GTISW within 200 W/m² of `pvlib.irradiance.get_total_irradiance(model='perez')`
+- [ ] GTI vs GTISW cross-check
+
+### 5. Daily inspection and outputs
+- [ ] Daily plot: GHI, DNI, DHI together
+- [ ] Daily plot with meteo data in the same view
+- [ ] Cleaning dips vs maintenance log [TODO: where are cleanings logged?]
+- [ ] Daily email: OK/ALERT, summary table, daily plot attached
+- [ ] Cron job, daily at about 05:00 UTC on yesterday's files [TODO: which host]
+- [ ] Optional: midday tracker check on today's partial file
+
+### 6. Long-term review (monthly)
+- [ ] Closure ratio over time (libinsitu `visual_qc`)
+- [ ] GHI/DHI over time when DNI < 1 W/m² (libinsitu uses < 10)
+- [ ] `visual_qc` multiplot of all QC tests
+- [ ] Manual inspection flag: default False, True for problem periods, with a note on type, cause and action
+
+### 7. Needs 1–2 years of data
+- [ ] Station-specific limits (QCRad, SERI-QC or K–Kt envelopes), redo yearly

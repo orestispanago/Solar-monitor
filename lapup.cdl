@@ -1,0 +1,342 @@
+netcdf lapup {
+
+# Copy of libinsitu 1.8.0 res/base.cdl, without the meteo variables (T2, RH, WS, WD, P) and the QC levels,
+# with the LAPUP variables and global attributes. See SPEC.md.
+
+dimensions:
+	time = UNLIMITED ; # Main dimension
+
+variables:
+
+	string station_name;
+		*:standard_name = "platform_name" ;
+		*:long_name = "station_name" ;
+		*:cf_role = "timeseries_id" ;
+		*:_value = {Station_ID};
+
+	float latitude;
+		*:long_name = "station latitude" ;
+		*:standard_name = "latitude" ;
+		*:units = "degrees_north" ;
+		*:_CoordinateAxisType = "Lat" ;
+		*:_value = {Station_Latitude};
+		*:axis = "Y" ;
+
+	float longitude;
+		*:long_name = "station longitude" ;
+		*:standard_name = "longitude" ;
+		*:units = "degrees_east" ;
+		*:_CoordinateAxisType = "Lon" ;
+		*:_value = {Station_Longitude};
+		*:axis = "X" ;
+
+	float elevation;
+		*:long_name = "Elevation above mean seal level" ;
+		*:standard_name = "height_above_mean_sea_level" ;
+		*:_CoordinateAxisType = "Z" ;
+		*:_value = {Station_Elevation};
+		*:units = "m" ;
+		*:axis = "Z" ;
+		*:positive = "up" ;
+
+	double crs;
+		*:grid_mapping_name = "latitude_longitude" ;
+		*:longitude_of_prime_meridian = 0.0 ;
+		*:semi_major_axis = 6378137.0 ;
+		*:inverse_flattening = 298.257223563 ;
+		*:epsg_code = "EPSG:4326";
+		*:_FillValue = -999.0;
+
+	uint time(time) ;
+		*:long_name = "Time of measurement, end of the 1-min interval" ;
+		*:standard_name = "time" ;
+		*:units = "seconds since 1970-01-01 00:00:00";
+		*:time_origin = "1970-01-01 00:00:00" ;
+		*:time_zone= "UTC"
+		*:abbreviation = "Date/Time" ;
+		*:_CoordinateAxisType = "Time" ;
+		*:axis = "T" ;
+		*:calendar = "gregorian" ;
+
+	# QC'd by libinsitu
+
+	float GHI(time) ;
+		*:long_name = "Global Horizontal Irradiance" ;
+		*:standard_name = "surface_downwelling_shortwave_flux_in_air" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:abbreviation = "SWD" ;
+		*:units = "W m-2" ;
+		*:valid_min_=0.0 ;
+		*:valid_max_=3000 ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: mean (interval: 1 minute)" ;
+		*:comment = "Kipp & Zonen CMP11" ;
+		*:least_significant_digit=1;
+		*:_FillValue = -999.0;
+
+	float DHI(time) ;
+		*:long_name = "Diffuse horizontal radiation" ;
+		*:standard_name = "surface_diffuse_downwelling_shortwave_flux_in_air" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:abbreviation = "DHI" ;
+		*:units = "W m-2" ;
+		*:valid_min_=0.0 ;
+		*:valid_max_=3000 ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: mean (interval: 1 minute)" ;
+		*:comment = "EKO MS-80, shaded, on the EKO STR-22G sun tracker" ;
+		*:least_significant_digit=1;
+		*:_FillValue = -999.0;
+
+	float BNI(time) ;
+		*:long_name = "Beam (or direct) normal radiation" ;
+		*:standard_name = "direct_downwelling_shortwave_flux_in_air" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:abbreviation = "BNI" ;
+		*:units = "W m-2" ;
+		*:valid_min_=0.0 ;
+		*:valid_max_=3000 ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: mean (interval: 1 minute)" ;
+		*:comment = "EKO MS-57, on the EKO STR-22G sun tracker" ;
+		*:least_significant_digit=1;
+		*:_FillValue = -999.0;
+
+	# Not QC'd by libinsitu
+
+	float DHI_ring(time) ;
+		*:long_name = "Diffuse horizontal radiation, shadow ring" ;
+		*:standard_name = "surface_diffuse_downwelling_shortwave_flux_in_air" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: mean (interval: 1 minute)" ;
+		*:comment = "Kipp & Zonen CMP11 with CM121 shadow ring, no shadow ring correction. Not QC'd by libinsitu" ;
+		*:least_significant_digit=1;
+		*:_FillValue = -999.0;
+
+	float GTI(time) ;
+		*:long_name = "Global tilted irradiance, 38 degrees, south" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: mean (interval: 1 minute)" ;
+		*:comment = "Kipp & Zonen CM11. Not QC'd by libinsitu" ;
+		*:least_significant_digit=1;
+		*:_FillValue = -999.0;
+
+	float GTISW(time) ;
+		*:long_name = "Global tilted irradiance, 38 degrees, southwest" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: mean (interval: 1 minute)" ;
+		*:comment = "Kipp & Zonen CM11. Not QC'd by libinsitu" ;
+		*:least_significant_digit=1;
+		*:_FillValue = -999.0;
+
+	float BNI_CSD3(time) ;
+		*:long_name = "Beam (or direct) normal radiation, CSD3 estimate" ;
+		*:standard_name = "direct_downwelling_shortwave_flux_in_air" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: mean (interval: 1 minute)" ;
+		*:comment = "Kipp & Zonen CSD3 sunshine duration sensor, estimated from 3 photodiodes. Not QC'd by libinsitu" ;
+		*:least_significant_digit=1;
+		*:_FillValue = -999.0;
+
+	float sunshine(time) ;
+		*:long_name = "Sunshine duration" ;
+		*:standard_name = "duration_of_sunshine" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "s" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: sum (interval: 1 minute)" ;
+		*:comment = "Kipp & Zonen CSD3: seconds in the minute with signal above 500 mV. Not QC'd by libinsitu" ;
+		*:_FillValue = -999.0;
+
+	# Standard deviations over the minute
+
+	float GHI_std(time) ;
+		*:long_name = "Standard deviation of GHI" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: standard_deviation (interval: 1 minute)" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	float DHI_std(time) ;
+		*:long_name = "Standard deviation of DHI" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: standard_deviation (interval: 1 minute)" ;
+		*:comment = "Combined from the six 10-s means and standard deviations" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	float BNI_std(time) ;
+		*:long_name = "Standard deviation of BNI" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: standard_deviation (interval: 1 minute)" ;
+		*:comment = "Combined from the six 10-s means and standard deviations" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	float DHI_ring_std(time) ;
+		*:long_name = "Standard deviation of DHI_ring" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: standard_deviation (interval: 1 minute)" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	float GTI_std(time) ;
+		*:long_name = "Standard deviation of GTI" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: standard_deviation (interval: 1 minute)" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	float GTISW_std(time) ;
+		*:long_name = "Standard deviation of GTISW" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: standard_deviation (interval: 1 minute)" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	float BNI_CSD3_std(time) ;
+		*:long_name = "Standard deviation of BNI_CSD3" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "W m-2" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: standard_deviation (interval: 1 minute)" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	# Instrument state
+
+	float MS80_temp(time) ;
+		*:long_name = "MS-80 temperature" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "degC" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: mean (interval: 1 minute)" ;
+		*:comment = "PT100 inside the MS-80" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	float solar_battery(time) ;
+		*:long_name = "Battery voltage of the solar logger" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "V" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: minimum (interval: 1 minute)" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	float suntracker_battery(time) ;
+		*:long_name = "Battery voltage of the suntracker logger" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "V" ;
+		*:grid_mapping = "crs" ;
+		*:cell_methods = "time: minimum (interval: 1 minute)" ;
+		*:least_significant_digit=2;
+		*:_FillValue = -999.0;
+
+	int solar_record(time) ;
+		*:long_name = "Record number of the solar logger" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "1" ;
+		*:cell_methods = "time: point" ;
+		*:_FillValue = -1;
+
+	int suntracker_record(time) ;
+		*:long_name = "Record number of the suntracker logger, last 10-s record of the minute" ;
+		*:coordinates = "time latitude longitude elevation "
+		*:units = "1" ;
+		*:cell_methods = "time: point" ;
+		*:_FillValue = -1;
+
+	# flag_masks and flag_meanings are populated automatically with the content of qc-flags.csv
+	uint QC(time) ;
+		*:long_name = "QC flag status";
+		*:comment = "Flag=1 means QC test failed";
+		*:standard_name = "quality_flag";
+		*:coordinates = "time latitude longitude elevation"
+
+	# flag_masks and flag_meanings are populated automatically with the content of qc-flags.csv
+	uint QC_run(time) ;
+		*:long_name = "QC flag run";
+		*:standard_name = "quality_flag_processed";
+		*:comment = "Flag=1 means QC test has run. 0 means it was outside of flag domain";
+		*:coordinates = "time latitude longitude elevation"
+
+# Global attributes
+
+	# Main info
+	:id = "{Network_ID}-{Station_ID}";
+	:title = "Timeseries of Laboratory of Atmospheric Physics, University of Patras ({Network_ID}). Station : Lab roof, Physics building, University of Patras" ;
+	:summary = "1-min solar radiation at the lab roof of the Laboratory of Atmospheric Physics, University of Patras, with QC flags." ;
+	:keywords = "meteorology, station, time, Earth Science > Atmosphere > Atmospheric Radiation > Incoming Solar Radiation, Earth Science > Atmosphere > Atmospheric Radiation > Sunshine"
+	:keywords_vocabulary = "GCMD Science Keywords" ;
+	:keywords_vocabulary_url = "https://gcmd.earthdata.nasa.gov/static/kms/" ;
+	:record = "Global, diffuse and direct normal irradiance, global tilted irradiance, sunshine duration" ;
+	:featureType = "timeSeries" ;
+	:cdm_data_type = "timeSeries";
+	:product_version = "libinsitu {Version}"
+
+	# Conventions
+	:Conventions = "CF-1.10 ACDD-1.3";
+
+	# Creator info [ACDD1.3]
+	:creator_name = "LAPUP" ;
+	:institution = "Laboratory of Atmospheric Physics, University of Patras" ;
+	:creator_url = "https://atmosphere.upatras.gr/en/" ;
+	:references = "QC tests: Long, C. N. and Dutton, E. G. (2002), BSRN Global Network recommended QC tests, V2.0; Forstinger, A. et al. (2021), Expert quality control of solar radiation ground data sets, ISES SWC 2021, https://doi.org/10.18086/swc.2021.38.02. Processing: Blanc, P. et al. (2022), Data sharing of in-situ measurements following GEO and FAIR principles in the solar energy sector, hal-03811628" ;
+	:comment = "Time is the end of the 1-min interval. QC flags by libinsitu, with the SG2 sun position at the time label (end of the minute). Data is flagged, never deleted. DHI and BNI are missing when the sun tracker was away from the roof." ;
+
+	# Station info & coordinates [ACDD1.3]
+	:project = "Laboratory of Atmospheric Physics, University of Patras"; # Network long name
+	:platform = "Lab roof, Physics building, University of Patras" ; # Should be a long / full name
+	:geospatial_lat_min = {Station_Latitude} ;
+	:geospatial_lon_min = {Station_Longitude} ;
+	:geospatial_lat_max = {Station_Latitude} ;
+	:geospatial_lon_max = {Station_Longitude} ;
+	:geospatial_vertical_min = {Station_Elevation};
+	:geospatial_vertical_max = {Station_Elevation};
+	:geospatial_bounds = "POINT({Station_Latitude} {Station_Longitude})";
+	:geospatial_bounds_crs = "EPSG:4326";
+
+	# Time information
+	:time_coverage_start = "{!Station_StartDate}T00:00:00" ;  # First data [Dataset Discovery v1.0]
+	:time_coverage_end = "{LastData}";  # Last data [Dataset Discovery v1.0]
+	:time_coverage_resolution = "PT{!Station_TimeResolution}"; # Resolution in  ISO 8601:2004 duration format [Dataset Discovery v1]
+	:date_created = "{CreationTime}";
+	:date_modified = "{UpdateTime}";
+
+	#
+	# -- Additional metadata (custom to insitu)
+	#
+
+	# IDs
+	:network_id = "{Network_ID}"; # Short ID
+	:station_id = "{Station_ID}"; # Short ID
+
+	# Location of station
+	:station_city = "Patras" ;
+	:station_country = "Greece" ;
+
+	# Misc
+	:climate = "Csa" ; # KoeppenGeiger climate at location of the station
+
+}
