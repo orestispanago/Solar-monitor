@@ -2,6 +2,8 @@ import pandas as pd
 from libinsitu.qc.qc_utils import compute_qc_flags
 
 from config import ELEVATION, LATITUDE, LONGITUDE
+from processing import merge_stations, resample_suntracker
+from readers import get_filenames_by_date, read_cr1000_file
 
 QC_COLUMNS = {
     "solar_GHI_Avg": "GHI",
@@ -84,3 +86,15 @@ def summarize_flags(flags):
 def add_test_info(summary):
     info = pd.DataFrame.from_dict(TEST_INFO, orient="index")
     return info.join(summary, how="right")
+
+
+def run_qc(date):
+    solar_path, suntracker_path = get_filenames_by_date(date)
+    solar = read_cr1000_file(solar_path)
+    suntracker = read_cr1000_file(suntracker_path)
+    suntracker_1min = resample_suntracker(suntracker)
+    merged = merge_stations(solar, suntracker_1min)
+    flags = calc_qc_flags(merged)
+    summary = summarize_flags(flags)
+    summary = add_test_info(summary)
+    return summary

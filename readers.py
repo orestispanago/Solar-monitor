@@ -97,3 +97,12 @@ def read_suntracker(start=None, end=None, folder=SUNTRACKER_DIR):
         df = df.reindex(columns=SUNTRACKER_COLUMNS_CR1000)
         df_list.append(df)
     return pd.concat(df_list)
+
+
+def get_filenames_by_date(date):
+    year = date.strftime("%Y")
+    solar_basename = date.strftime("solar1min_%Y%m%d.csv")
+    solar_path = f"{SOLAR_DIR}/{year}/{solar_basename}"
+    suntracker_basename = date.strftime("suntracker10sec_%Y%m%d.csv")
+    suntracker_path = f"{SUNTRACKER_DIR}/{year}/{suntracker_basename}"
+    return solar_path, suntracker_path

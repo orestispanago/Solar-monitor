@@ -56,7 +56,8 @@ Tests and conditions: [best_practices.md](best_practices.md). Grouped by the dat
 - [ ] Optional: midday tracker check on today's partial file, email only on issues
   - Mon–Fri at 12:00 Athens: about 4.5 h of daylight data in winter
   - Own lock file, e.g. `~/solar_monitor_midday_qc.lock`, so neither job skips the other silently
-  - [TODO: only the tracker tests `K_UL_KT`, `Kn_LL_KT`?]
+  - Tests: tracker only, `Kn_LL_KT` (tracker stopped) and `K_UL_KT` (MS-80 not shaded), plus completeness once built. Other tests point to slow faults the yesterday run catches
+  - Overcast morning: n_tested = 0, report NOT RUN, not OK
   - [TODO: export CSVs from both runs? If so, a separate name for midday, e.g. `qc_midday_%Y%m%d.csv`, so the yesterday run doesn't overwrite it]
 
 ### 6. Long-term review (monthly)
