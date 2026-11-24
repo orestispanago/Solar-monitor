@@ -41,6 +41,17 @@ QC tests of libinsitu 1.8.0, from its `res/qc-tests.csv`. The naming convention 
 
 `K_UL_KT` and `Kn_LL_KT` use Kt to decide when the test applies (clear-ish sky), not to set the limit.
 
+## When a test is run
+
+Each test runs only in its domain and when all its inputs are present. Other minutes are flagged −1 (not run) and are not counted in `n_tested`, so `n_tested` is never 1440 per day.
+
+| Tests | Domain |
+|---|---|
+| PPL and ERL tests (GHI, DIF, DNI) | SZA ≤ 90° (daylight) |
+| K, Kn and closure tests | GHI > 50 W/m² and SZA < 90° |
+
+GHI > 50 W/m² excludes low sun and dark overcast, where ratios like K = DHI / GHI are unstable.
+
 ## What a failure means
 
 | Test | A failure usually means |

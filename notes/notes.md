@@ -6,18 +6,19 @@ Tests and conditions: [best_practices.md](best_practices.md). Grouped by the dat
 
 ### 1. libinsitu flags on the merged df
 - [x] Call `compute_qc_flags()` on solar GHI + suntracker DHI, DNI (`qc.py`)
-- [x] Fix `main.py`: pass `suntracker_1min` to `run_qc()`, drop the unused `merged`
-- [ ] Summarize the libinsitu tests, one row each (n_tested, n_failed, pct_failed, status):
-  - [ ] BSRN physically possible upper limits, GHI, DHI, DNI
-  - [ ] BSRN extremely rare upper limits, GHI, DHI, DNI
-  - [ ] Diffuse fraction K < 1.05/1.10
-  - [ ] Geuder tracker test K ≤ 0.96 when Kt > 0.6
-  - [ ] Kn < Kt
-  - [ ] Forstinger tracker-off (Kn > 0.0171 or Kt < 0.533)
-  - [ ] Closure ratio
-  - [ ] Maxwell closure difference
-- [ ] Map each test to instrument and action
-- [ ] OK/ALERT threshold per test, NOT RUN when n_tested = 0
+- [x] Fix `yesterday_qc.py` (was `main.py`): pass `suntracker_1min` to `run_qc()`, drop the unused `merged`
+- [x] Summarize the libinsitu tests, one row each (n_tested, n_failed, pct_failed): `summarize_flags()`
+  - [x] BSRN physically possible upper limits, GHI, DHI, DNI
+  - [x] BSRN extremely rare upper limits, GHI, DHI, DNI
+  - [x] Diffuse fraction K < 1.05/1.10
+  - [x] Geuder tracker test K ≤ 0.96 when Kt > 0.6
+  - [x] Kn < Kt
+  - [x] Forstinger tracker-off (Kn > 0.0171 or Kt < 0.533)
+  - [x] Closure ratio
+  - [x] Maxwell closure difference
+- [x] Map each test to its likely cause and instrument (`TEST_INFO`)
+- [ ] Add the action for each test
+- [ ] Status column: OK/ALERT threshold per test, NOT RUN when n_tested = 0
 
 ### 2. Needs only the df + sun position (zenith, ETR from libinsitu)
 - [ ] Completeness: row count (1440 solar, 8640 suntracker), empty or stuck columns, time gaps
@@ -50,8 +51,14 @@ Tests and conditions: [best_practices.md](best_practices.md). Grouped by the dat
 - [ ] Daily plot with meteo data in the same view
 - [ ] Cleaning dips vs maintenance log [TODO: where are cleanings logged?]
 - [ ] Daily email: OK/ALERT, summary table, daily plot attached
-- [ ] Cron job, daily at about 05:00 UTC on yesterday's files [TODO: which host]
-- [ ] Optional: midday tracker check on today's partial file
+- [ ] Cron jobs on .21, 10:00 Athens (one hour after FTP-alerts, so an outage it reports can be fixed first):
+  - Tue–Fri: yesterday's files
+  - Mon: weekly check of the past 7 days (Mon–Sun), no separate yesterday-only run [TODO: report format: totals over the week or one row per test per day]
+- [ ] Optional: midday tracker check on today's partial file, email only on issues
+  - Mon–Fri at 12:00 Athens: about 4.5 h of daylight data in winter
+  - Own lock file, e.g. `~/solar_monitor_midday.lock`, so neither job skips the other silently
+  - [TODO: only the tracker tests `K_UL_KT`, `Kn_LL_KT`?]
+  - [TODO: export CSVs from both runs? If so, a separate name for midday, e.g. `qc_midday_%Y%m%d.csv`, so the yesterday run doesn't overwrite it]
 
 ### 6. Long-term review (monthly)
 - [ ] Closure ratio over time (libinsitu `visual_qc`)

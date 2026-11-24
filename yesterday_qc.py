@@ -39,7 +39,6 @@ def check_day(day):
 
     summary = summarize_flags(flags)
     summary = add_test_info(summary)
-    summary.insert(0, "date", day.date())
     return summary
 
 
