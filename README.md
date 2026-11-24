@@ -15,12 +15,12 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 
-To run on weekdays at 04:00, without overlapping runs:
+To run Tuesday to Friday at 10:00 (host clock in Athens time), without overlapping runs. Monday is left for the weekly check:
 
 ```bash
 # Runs the libinsitu QC tests on yesterday's solar and suntracker files
-# Weekdays at 04:00
-0 4 * * 1-5 cd ~/Solar-monitor && /usr/bin/flock -w 0 ~/solar_monitor.lock .venv/bin/python yesterday_qc.py
+# Tue–Fri at 10:00 Athens time
+0 10 * * 2-5 /usr/bin/flock -w 0 ~/solar_monitor_yesterday_qc.lock ~/Solar-monitor/.venv/bin/python ~/Solar-monitor/yesterday_qc.py
 ```
 
 To check if your cron job is running:

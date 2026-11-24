@@ -8,6 +8,10 @@ from processing import merge_stations, resample_suntracker
 from qc import add_test_info, calc_qc_flags, summarize_flags
 from readers import read_cr1000_file
 
+abspath = os.path.abspath(__file__)
+dname = os.path.dirname(abspath)
+os.chdir(dname)
+
 
 def run_qc(solar, suntracker):
     df = merge_stations(solar, suntracker)
